@@ -43,9 +43,12 @@ int main(int argc, char** argv)
   toBinaryScale(temp1);
   write_binary_bitmap(temp1, "OutBinary.bmp");
 
+  struct CaptureResult result;
   // Step 3: Erode until fully eroded
   int i=0;
   while (!erode(temp1Ptr, temp2Ptr)) {
+      capture(temp2Ptr, &result); // step 5
+
       // Save each erosion step
       char filename[20];
       sprintf(filename, "OUTeroded%d.bmp", i);
@@ -60,13 +63,8 @@ int main(int argc, char** argv)
       i++;
   }
 
-  // NOT WORKING
-  // struct CaptureResult result;
-  // capture(temp1Ptr, result);
+  printf("Captured %d chords:\n", result.n);
 
-  // printf("Captured %d chords:\n", result.n);
-
-  struct CaptureResult result = { .n = 6, .chords = {{10,10}, {100,100}, {200,200}, {300,300}, {400,400}, {500,500}} };
   generateOutputImage(argv[2], input_image, result.chords, result.n);
 
   printf("Done!\n");

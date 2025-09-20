@@ -1,109 +1,65 @@
 #include "Step4Capture.h"
 #include <stdio.h>
 
+
+char isPointOnImageBorder(int x, int y) {
+    return (x == 0 || x == BMP_WIDTH-1 || y == 0 || y == BMP_HEIGTH-1);
+}
+
 char isExclusionFrameClear(int x, int y, unsigned char arr[BMP_WIDTH][BMP_HEIGTH]) {
-    for (char k=x-HALF_CAPTURE_SIZE-1; k<=x+HALF_CAPTURE_SIZE+1; k++) {
-        if (arr[k][y+HALF_CAPTURE_SIZE]) {
-            return 0;
+    const int sideCenters[4] = {
+        x + HALF_TOTAL_CAPTURE_SIZE, // right
+        x - HALF_TOTAL_CAPTURE_SIZE, // left
+        y + HALF_TOTAL_CAPTURE_SIZE, // top
+        y - HALF_TOTAL_CAPTURE_SIZE  // bottom
+    };
+    
+    for (int s = 0; s < 4; s++) {
+        char isHorizontalSide = (s < 2);
+        if(isPointOnImageBorder(isHorizontalSide ? sideCenters[s] : x, !isHorizontalSide ? sideCenters[s] : y)) {
+            continue; // if we are on the border, we assume that the frame is clear and continue checking other sides
+        }
+        
+        for (char offset=-HALF_TOTAL_CAPTURE_SIZE; offset<HALF_TOTAL_CAPTURE_SIZE; offset++)
+        {
+            const int xFrame = isHorizontalSide ? sideCenters[s] : x+offset; // if right or left side, then x is constant
+            const int yFrame = !isHorizontalSide ? sideCenters[s] : y+offset; // if top or bottom side, then y is constant
+            if (arr[xFrame][yFrame]) {
+                return 0;
+            }
         }
     }
-    for (char k=x-HALF_CAPTURE_SIZE; k<=x+HALF_CAPTURE_SIZE; k++) {
-        if (arr[k][y-HALF_CAPTURE_SIZE]) {
-            return 0;
-        }
-    }
-    for (char k=y-HALF_CAPTURE_SIZE; k<=y+HALF_CAPTURE_SIZE; k++) {
-        if (arr[x+HALF_CAPTURE_SIZE][k]) {
-            return 0;
-        }
-    }
-    for (char k=y-HALF_CAPTURE_SIZE; k<=y+HALF_CAPTURE_SIZE; k++) {
-        if (arr[x-HALF_CAPTURE_SIZE][k]) {
-            return 0;
-        }
-    }
+
     return 1;
 }
 
-char safeGetCap(int i, int j, unsigned char arr[BMP_WIDTH][BMP_HEIGTH]) {
-    if (i<0 || i>=BMP_WIDTH || j<0 ||j>=BMP_HEIGTH) {
-        return 0;
-    }
-    return arr[i][j];
-}
-
-int chords[1000000][2];
-
-void capture(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], struct CaptureResult result) {
-    int n = 0;
-    int p = 0; //pointer
-    char detectedOnBorder; //bool
-    char detectedInArea; //bool
-
-    for (int i=HALF_CAPTURE_SIZE; i<=BMP_WIDTH-HALF_CAPTURE_SIZE; i++) {
-        for (int j=HALF_CAPTURE_SIZE; j<=BMP_HEIGTH-HALF_CAPTURE_SIZE; j++) {
-            printf("Row %d/%d Col %d/%d\r", i, BMP_WIDTH-HALF_CAPTURE_SIZE, j, BMP_HEIGTH-HALF_CAPTURE_SIZE);
-            // Check whether exclusion frame is all black. If not, continue
-            for (char k=i-HALF_CAPTURE_SIZE-1; k<=i+HALF_CAPTURE_SIZE+1; k++) {
-                if (safeGetCap(k, j+HALF_CAPTURE_SIZE, input_image)==255) {
-                    detectedOnBorder = 1;
-                    break;
-                }
+void capture(unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH], struct CaptureResult* result) {
+    for (int x=HALF_TOTAL_CAPTURE_SIZE; x<BMP_WIDTH-HALF_TOTAL_CAPTURE_SIZE; x++) {
+        for (int y=HALF_TOTAL_CAPTURE_SIZE; y<BMP_HEIGTH-HALF_TOTAL_CAPTURE_SIZE; y++) {
+            // skip if cell is on the border
+            if (!isExclusionFrameClear(x, y, binaryImage))
+            {
+                continue;
             }
-            if (detectedOnBorder) {continue;}
-            printf("1");
-            for (char k=i-HALF_CAPTURE_SIZE-1; k<=i+HALF_CAPTURE_SIZE+1; k++) {
-                if (safeGetCap(k, j-HALF_CAPTURE_SIZE, input_image)==255) {
-                    detectedOnBorder = 1;
-                    break;
-                }
-            }
-            if (detectedOnBorder) {continue;}
-            
-            printf("2");
-            for (char k=j-HALF_CAPTURE_SIZE-1; k<=j+HALF_CAPTURE_SIZE+1; k++) {
-                if (safeGetCap(i+HALF_CAPTURE_SIZE, k, input_image)==255) {
-                    detectedOnBorder = 1;
-                    break;
-                }
-            }
-            if (detectedOnBorder) {continue;}
-            printf("3");
-            for (char k=j-HALF_CAPTURE_SIZE-1; k<=j+HALF_CAPTURE_SIZE+1; k++) {
-                if (safeGetCap(i-HALF_CAPTURE_SIZE, k, input_image)==255) {
-                    detectedOnBorder = 1;
-                    break;
-                }
-            }
-            if (detectedOnBorder) {continue;}
-            
-            printf("4");
 
-            // Check for one white pixel in detection area
-            for (int k=i-HALF_CAPTURE_SIZE; k<=i+HALF_CAPTURE_SIZE; k++) {
-                for (int l=j-HALF_CAPTURE_SIZE; l<=j+HALF_CAPTURE_SIZE; l++) {
-                    if (input_image[k][l]==255) {
-                        detectedInArea = 1;
-                        input_image[k][l] = 0;
+            // check for cell presence in the capture area
+            char isCellDetected=0;
+            for (int offsetX=-HALF_CAPTURE_SIZE; offsetX<=HALF_CAPTURE_SIZE; offsetX++) {
+                for (int offsetY=-HALF_CAPTURE_SIZE; offsetY<=HALF_CAPTURE_SIZE; offsetY++) {
+                    if (binaryImage[x+offsetX][y+offsetY]) {
+                        isCellDetected = 1;
+                        binaryImage[x+offsetX][y+offsetY] = 0;
                     }
                 }
             }
-            
-            printf("5");
 
-            // Count cell
-            if (detectedInArea) {
-                n++;
-                chords[p][0] = i;
-                chords[p][1] = j;
-                p++;
+            // add to result if a cell was detected
+            if (isCellDetected) {
+                printf("Cell detected at (%d, %d)\n", x, y);
+                result->n++;
+                result->chords[result->n][0] = x;
+                result->chords[result->n][1] = y;
             }
         }
-    }
-    
-    for (int i=0; i<n; i++) {
-        result.n++;
-        result.chords[result.n][0] = chords[i][0];
-        result.chords[result.n][1] = chords[i][1];
     }
 }
