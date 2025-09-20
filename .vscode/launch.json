@@ -10,7 +10,7 @@
       "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
 
       // >>> Put your runtime args here <<<
-      "args": [".\\samples\\easy\\1EASY.bmp", ".\\out.bmp"],
+      "args": [".\\samples\\easy\\1EASY.bmp", ".\\output_images\\FinalOutout.bmp"],
 
       // Working directory for the process
       "cwd": "${fileDirname}",

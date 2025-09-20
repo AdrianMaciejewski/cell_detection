@@ -1,5 +1,5 @@
-#ifndef OUTPUT_IMAGE_GENERATION_H
-#define OUTPUT_IMAGE_GENERATION_H
+#ifndef MaRKINGCELLS_H
+#define MaRKINGCELLS_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,8 +11,7 @@
 #define X_COLOR 0xff0000 // red
 
 // Public function declarations
-void generateOutputImage(
-    char * outputFilePath, 
+void drawAllX(
     unsigned char originalImageArray[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
     int detectedCellsCoordinates[][2], // array of pairs (x, y)
     int detectedCellsNo

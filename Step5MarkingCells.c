@@ -1,4 +1,4 @@
-#include "Step5OutputImageGeneration.h"
+#include "Step5MarkingCells.h"
 
 
 static void setPixelColor(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int x, int y, uint32_t color
@@ -26,8 +26,7 @@ static void drawX(
     }
 }
 
-void generateOutputImage(
-    char *outputFilePath, 
+void drawAllX(
     unsigned char originalImageArray[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
     int detectedCellsCoordinates[][2],
     int detectedCellsNo
@@ -36,7 +35,5 @@ void generateOutputImage(
         const int xCenter = detectedCellsCoordinates[i][0];
         const int yCenter = detectedCellsCoordinates[i][1];
         drawX(originalImageArray, X_SIZE, xCenter, yCenter);
-
-        write_bitmap(originalImageArray, outputFilePath);
     }
 }

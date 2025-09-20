@@ -10,6 +10,7 @@
         "step3erode.h": "c",
         "step4capture.h": "c",
         "step5outputimagegeneration.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "step5markingcells.h": "c"
     }
 }

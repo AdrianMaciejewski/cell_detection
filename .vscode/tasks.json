@@ -10,7 +10,7 @@
                 "${fileDirname}\\Step2BinaryThreshold.c",
                 "${fileDirname}\\Step3Erode.c",
                 "${fileDirname}\\Step4Capture.c",
-                "${fileDirname}\\Step5OutputImageGeneration.c",
+                "${fileDirname}\\Step5MarkingCells.c",
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
