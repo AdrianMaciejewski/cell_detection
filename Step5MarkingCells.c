@@ -19,10 +19,13 @@ static void drawX(
         int x = xCenter + offset;
 
         int yUp = yCenter + offset;
-        setPixelColor(image, x, yUp, X_COLOR);
-
         int yDown = yCenter - offset;
-        setPixelColor(image, x, yDown, X_COLOR);
+        for (int t = -X_THICKNESS/2; t <= X_THICKNESS/2; t++) {
+            setPixelColor(image, x, yUp + t, X_COLOR);
+            setPixelColor(image, x, yDown + t, X_COLOR);
+            setPixelColor(image, x + t, yUp, X_COLOR);
+            setPixelColor(image, x + t, yDown, X_COLOR);
+        }
     }
 }
 

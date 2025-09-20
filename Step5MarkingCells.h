@@ -9,6 +9,7 @@
 
 #define X_SIZE 13 // size in px
 #define X_COLOR 0xff0000 // red
+#define X_THICKNESS 4 // thickness in px, should be even
 
 // Public function declarations
 void drawAllX(
