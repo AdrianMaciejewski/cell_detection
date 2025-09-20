@@ -9,6 +9,8 @@
                 "${fileDirname}\\Step1GrayScale.c",
                 "${fileDirname}\\Step2BinaryThreshold.c",
                 "${fileDirname}\\Step3Erode.c",
+                "${fileDirname}\\Step4Capture.c",
+                "${fileDirname}\\Step5OutputImageGeneration.c",
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",

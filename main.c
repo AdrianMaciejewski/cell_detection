@@ -10,7 +10,13 @@
 #include "Step1GrayScale.h"
 #include "Step2BinaryThreshold.h"
 #include "Step3Erode.h"
+#include "Step4Capture.h"
+#include "Step5OutputImageGeneration.h"
 
+
+//Declaring the array to store the image (unsigned char = unsigned 8 bit)
+unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 
 //Main function
 int main(int argc, char** argv)
@@ -20,12 +26,6 @@ int main(int argc, char** argv)
       fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
       exit(1);
   }
-  
-  printf("SEAL! 🦭");
-
-  //Declaring the array to store the image (unsigned char = unsigned 8 bit)
-  unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-  unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 
   //Load image from file
   read_bitmap(argv[1], input_image);
@@ -59,6 +59,15 @@ int main(int argc, char** argv)
       // Increment step counter
       i++;
   }
+
+  // NOT WORKING
+  // struct CaptureResult result;
+  // capture(temp1Ptr, result);
+
+  // printf("Captured %d chords:\n", result.n);
+
+  struct CaptureResult result = { .n = 6, .chords = {{10,10}, {100,100}, {200,200}, {300,300}, {400,400}, {500,500}} };
+  generateOutputImage(argv[2], input_image, result.chords, result.n);
 
   printf("Done!\n");
   return 0;

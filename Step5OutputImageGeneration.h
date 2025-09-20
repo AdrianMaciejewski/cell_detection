@@ -1,8 +1,14 @@
-#include <cbmp.h>
+#ifndef OUTPUT_IMAGE_GENERATION_H
+#define OUTPUT_IMAGE_GENERATION_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include "cbmp.h"
+
 
 #define X_SIZE 13 // size in px
 #define X_COLOR 0xff0000 // red
-
 
 // Public function declarations
 void generateOutputImage(
@@ -11,3 +17,5 @@ void generateOutputImage(
     int detectedCellsCoordinates[][2], // array of pairs (x, y)
     int detectedCellsNo
 );
+
+#endif

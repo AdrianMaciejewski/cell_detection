@@ -6,8 +6,11 @@
 #define CAPTURE_SIZE 12
 #define HALF_CAPTURE_SIZE (CAPTURE_SIZE / 2)
 
-char safeGetCap(int i, int j, char arr[BMP_WIDTH][BMP_HEIGTH]);
+struct CaptureResult {
+    int chords[10000][2];
+    int n;
+};
 
-void erode(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH]);
+void capture(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], struct CaptureResult result);
 
 #endif

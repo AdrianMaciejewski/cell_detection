@@ -1,48 +1,25 @@
-#include "Step4Capture.h"
-#include <stdio.h>
+#include "cbmp.h"
 
-char isExclusionFrameClear(int x, int y, unsigned char arr[BMP_WIDTH][BMP_HEIGTH]) {
-    for (char k=x-HALF_CAPTURE_SIZE-1; k<=x+HALF_CAPTURE_SIZE+1; k++) {
-        if (arr[k][y+HALF_CAPTURE_SIZE]) {
-            return 0;
-        }
-    }
-    for (char k=x-HALF_CAPTURE_SIZE; k<=x+HALF_CAPTURE_SIZE; k++) {
-        if (arr[k][y-HALF_CAPTURE_SIZE]) {
-            return 0;
-        }
-    }
-    for (char k=y-HALF_CAPTURE_SIZE; k<=y+HALF_CAPTURE_SIZE; k++) {
-        if (arr[x+HALF_CAPTURE_SIZE][k]) {
-            return 0;
-        }
-    }
-    for (char k=y-HALF_CAPTURE_SIZE; k<=y+HALF_CAPTURE_SIZE; k++) {
-        if (arr[x-HALF_CAPTURE_SIZE][k]) {
-            return 0;
-        }
-    }
-    return 1;
-}
+#define CAPTURE_SIZE 12 //remove when finished product
+#define HALF_CAPTURE_SIZE CAPTURE_SIZE/2
 
-char safeGetCap(int i, int j, unsigned char arr[BMP_WIDTH][BMP_HEIGTH]) {
+char safeGetCap(int i, int j, char arr[BMP_WIDTH][BMP_HEIGTH]) {
     if (i<0 || i>=BMP_WIDTH || j<0 ||j>=BMP_HEIGTH) {
         return 0;
     }
     return arr[i][j];
 }
 
-int chords[1000000][2];
-
-void capture(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], struct CaptureResult result) {
+void erode(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH]) {
     int n = 0;
+    int chords[10000][2];
     int p = 0; //pointer
     char detectedOnBorder; //bool
     char detectedInArea; //bool
 
     for (int i=HALF_CAPTURE_SIZE; i<=BMP_WIDTH-HALF_CAPTURE_SIZE; i++) {
         for (int j=HALF_CAPTURE_SIZE; j<=BMP_HEIGTH-HALF_CAPTURE_SIZE; j++) {
-            printf("Row %d/%d Col %d/%d\r", i, BMP_WIDTH-HALF_CAPTURE_SIZE, j, BMP_HEIGTH-HALF_CAPTURE_SIZE);
+
             // Check whether exclusion frame is all black. If not, continue
             for (char k=i-HALF_CAPTURE_SIZE-1; k<=i+HALF_CAPTURE_SIZE+1; k++) {
                 if (safeGetCap(k, j+HALF_CAPTURE_SIZE, input_image)==255) {
@@ -51,7 +28,6 @@ void capture(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
                 }
             }
             if (detectedOnBorder) {continue;}
-            printf("1");
             for (char k=i-HALF_CAPTURE_SIZE-1; k<=i+HALF_CAPTURE_SIZE+1; k++) {
                 if (safeGetCap(k, j-HALF_CAPTURE_SIZE, input_image)==255) {
                     detectedOnBorder = 1;
@@ -59,8 +35,6 @@ void capture(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
                 }
             }
             if (detectedOnBorder) {continue;}
-            
-            printf("2");
             for (char k=j-HALF_CAPTURE_SIZE-1; k<=j+HALF_CAPTURE_SIZE+1; k++) {
                 if (safeGetCap(i+HALF_CAPTURE_SIZE, k, input_image)==255) {
                     detectedOnBorder = 1;
@@ -68,7 +42,6 @@ void capture(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
                 }
             }
             if (detectedOnBorder) {continue;}
-            printf("3");
             for (char k=j-HALF_CAPTURE_SIZE-1; k<=j+HALF_CAPTURE_SIZE+1; k++) {
                 if (safeGetCap(i-HALF_CAPTURE_SIZE, k, input_image)==255) {
                     detectedOnBorder = 1;
@@ -76,8 +49,6 @@ void capture(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
                 }
             }
             if (detectedOnBorder) {continue;}
-            
-            printf("4");
 
             // Check for one white pixel in detection area
             for (int k=i-HALF_CAPTURE_SIZE; k<=i+HALF_CAPTURE_SIZE; k++) {
@@ -88,8 +59,6 @@ void capture(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
                     }
                 }
             }
-            
-            printf("5");
 
             // Count cell
             if (detectedInArea) {
@@ -99,11 +68,5 @@ void capture(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
                 p++;
             }
         }
-    }
-    
-    for (int i=0; i<n; i++) {
-        result.n++;
-        result.chords[result.n][0] = chords[i][0];
-        result.chords[result.n][1] = chords[i][1];
     }
 }

@@ -1,15 +1,12 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h> 
-#include <outputImageGeneration.h>
+#include "Step5OutputImageGeneration.h"
 
 
 static void setPixelColor(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int x, int y, uint32_t color
 ) {
     if (x >= 0 && x < BMP_WIDTH && y >= 0 && y < BMP_HEIGTH) {
-        unsigned char r = (unsigned char)((color >> 16) & 0xFF);
-        unsigned char g = (unsigned char)((color >>  8) & 0xFF);
-        unsigned char b = (unsigned char)((color      ) & 0xFF);
+        image[x][y][0] = (unsigned char)((color >> 16) & 0xFF);
+        image[x][y][1] = (unsigned char)((color >>  8) & 0xFF);
+        image[x][y][2] = (unsigned char)((color      ) & 0xFF);
     }
 }
 
