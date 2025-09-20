@@ -3,6 +3,6 @@
 
 #include "cbmp.h"
 
-void erode(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH]);
+char erode(unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH], unsigned char outputImage[BMP_WIDTH][BMP_HEIGTH]);
 
 #endif
