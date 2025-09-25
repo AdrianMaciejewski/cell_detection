@@ -56,9 +56,9 @@ void capture(unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
             // add to result if a cell was detected
             if (isCellDetected) {
                 printf("Cell detected at (%d, %d)\n", x, y);
-                result->n++;
                 result->chords[result->n][0] = x;
                 result->chords[result->n][1] = y;
+                result->n++;
             }
         }
     }
