@@ -1,15 +1,16 @@
 #include "Step3Erode.h"
 #include <stdio.h>
 
+char isOutOfBounds(int x, int y) {
+    return x<0 || x>=BMP_WIDTH || y<0 || y>=BMP_HEIGTH;
+}
+
 char shouldBeEroded(int x, int y, unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH]) {
-    // can be optimized by removing variables
-    const char isOutOfBounds = x<0 || x>=BMP_WIDTH || y<0 || y>=BMP_HEIGTH;
-    const char isAdjecentToBlack = 
-        !binaryImage[x-1][y] ||
-        !binaryImage[x+1][y] ||
-        !binaryImage[x][y-1] ||
-        !binaryImage[x][y+1];
-    return !isOutOfBounds && isAdjecentToBlack;
+    return
+        (!isOutOfBounds(x-1, y) && !binaryImage[x-1][y]) ||
+        (!isOutOfBounds(x+1, y) && !binaryImage[x+1][y]) ||
+        (!isOutOfBounds(x, y-1) && !binaryImage[x][y-1]) ||
+        (!isOutOfBounds(x, y-1) && !binaryImage[x][y+1]);
 }
 
 char erode(unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH], unsigned char outputImage[BMP_WIDTH][BMP_HEIGTH]) {
