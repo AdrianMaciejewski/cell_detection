@@ -8,10 +8,10 @@ char isPointOnImageBorder(int x, int y) {
 
 char isExclusionFrameClear(int x, int y, unsigned char arr[BMP_WIDTH][BMP_HEIGTH]) {
     const int sideCenters[4] = {
-        x + HALF_TOTAL_CAPTURE_SIZE, // right
-        x - HALF_TOTAL_CAPTURE_SIZE, // left
-        y + HALF_TOTAL_CAPTURE_SIZE, // top
-        y - HALF_TOTAL_CAPTURE_SIZE  // bottom
+        x + HALF_TOTAL_CAPTURE_SIZE-1, // right
+        x - HALF_TOTAL_CAPTURE_SIZE+1, // left
+        y + HALF_TOTAL_CAPTURE_SIZE-1, // top
+        y - HALF_TOTAL_CAPTURE_SIZE+1  // bottom
     };
     
     for (int s = 0; s < 4; s++) {
