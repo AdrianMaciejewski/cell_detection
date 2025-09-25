@@ -20,7 +20,7 @@ char isExclusionFrameClear(int x, int y, unsigned char arr[BMP_WIDTH][BMP_HEIGTH
             continue; // if we are on the border, we assume that the frame is clear and continue checking other sides
         }
         
-        for (char offset=-HALF_TOTAL_CAPTURE_SIZE; offset<HALF_TOTAL_CAPTURE_SIZE; offset++)
+        for (char offset=-HALF_TOTAL_CAPTURE_SIZE; offset<=HALF_TOTAL_CAPTURE_SIZE; offset++)
         {
             const int xFrame = isHorizontalSide ? sideCenters[s] : x+offset; // if right or left side, then x is constant
             const int yFrame = !isHorizontalSide ? sideCenters[s] : y+offset; // if top or bottom side, then y is constant
