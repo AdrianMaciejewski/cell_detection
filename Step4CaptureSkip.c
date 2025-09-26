@@ -59,9 +59,10 @@ void capture(unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
                 result->chords[result->n][0] = x;
                 result->chords[result->n][1] = y;
                 result->n++;
-            } else { // if all cells black, then skip the whole square
-                y += CAPTURE_SIZE;
             }
+            
+            y = (y+CAPTURE_SIZE>BMP_HEIGTH) ? BMP_HEIGTH : (y+CAPTURE_SIZE);
+            
         }
     }
 }
