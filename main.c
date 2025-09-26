@@ -6,10 +6,13 @@
 #include "Step3Erode.h"
 #include "Step4Capture.h"
 #include "Step5MarkingCells.h"
+#include <time.h>
 
 
 struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_HEIGTH])
 {
+  clock_t start = clock();
+
   struct CaptureResult result = { .n = 0 };
   
   unsigned char (*inputImagePtr)[BMP_HEIGTH] = inputImage;
@@ -20,7 +23,7 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
   int i=0;
   while (!erode(inputImagePtr, outputImagePtr)) {
       // Save each erosion step
-      char filename[20];
+      char filename[50];
       sprintf(filename, ".\\output_images\\OUTeroded%d.bmp", i);
       write_binary_bitmap(outputImagePtr, filename);
 
@@ -36,6 +39,10 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
       i++;
   }
   printf("Captured %d chords:\n", result.n);
+
+  clock_t end = clock();
+  int elapsed = (double)(end-start)/CLOCKS_PER_SEC*1000000;
+  printf("erode and capture ran in: %d microseconds\n", elapsed);
 
   return result;
 }
