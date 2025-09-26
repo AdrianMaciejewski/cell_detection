@@ -1,32 +1,59 @@
 #include "Step3Erode.h"
 #include <stdio.h>
 
+// --- shape ---
+// Define the erosion shape
 const char erosionShape[erosionShapeSize][erosionShapeSize] = {
   {0,1,0},
   {1,1,1},
   {0,1,0}
 };
 
+char areErosionShapeOffsetsInitialized = 0;
+int erosionShapeOffsets[erosionShapeSize*erosionShapeSize][2]; // for efficiency, use indexes of 1s in erosionShape
+int erosionShapeOffsetsCount = 0;
+
+// convenience function to get the offsets of the erosion shape
+int getErosionShapeIndexOffsets() {
+    int count = 0;
+    for (int xOffset = -erosionShapeDiameter; xOffset <= erosionShapeDiameter; xOffset++) {
+        for (int yOffset = -erosionShapeDiameter; yOffset <= erosionShapeDiameter; yOffset++) {
+            if (erosionShape[xOffset + erosionShapeDiameter][yOffset + erosionShapeDiameter] == 1) {
+                erosionShapeOffsets[count][0] = xOffset;
+                erosionShapeOffsets[count][1] = yOffset;
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+void initializeErosionShape() {
+    if (areErosionShapeOffsetsInitialized) return;
+    erosionShapeOffsetsCount = getErosionShapeIndexOffsets();
+    areErosionShapeOffsetsInitialized = 1;
+}
+
+// --- erosion ---
 char isOutOfBounds(int x, int y) {
     return x<0 || x>=BMP_WIDTH || y<0 || y>=BMP_HEIGTH;
 }
 
 char shouldBeEroded(int x, int y, unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH]) {
-    for (int i=-erosionShapeDiameter; i<=erosionShapeDiameter; i++) {
-        for (int j=-erosionShapeDiameter; j<=erosionShapeDiameter; j++) {
-            if (erosionShape[i+erosionShapeDiameter][j+erosionShapeDiameter]==0) continue; // don't care about the central pixel
-
-            int neighborX = x + i;
-            int neighborY = y + j;
-            if (!isOutOfBounds(neighborX, neighborY) && !binaryImage[neighborX][neighborY]) {
-                return 1;
-            }
+    for (int i=0; i<=erosionShapeOffsetsCount; i++) {
+        int* offset = erosionShapeOffsets[i];
+        int neighborX = x + offset[0];
+        int neighborY = y + offset[1];
+        if (!isOutOfBounds(neighborX, neighborY) && !binaryImage[neighborX][neighborY]) {
+            return 1;
         }
     }
     return 0;
 }
 
 char erode(unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH], unsigned char outputImage[BMP_WIDTH][BMP_HEIGTH]) {
+    initializeErosionShape(); // initialize the offsets if not done yet
+
     char isFullyEroded = 1;
     for (int x=0; x<BMP_WIDTH; x++) {
         for (int y=0; y<BMP_HEIGTH; y++) {
