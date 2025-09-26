@@ -20,7 +20,7 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
   int i=0;
   while (!erode(inputImagePtr, outputImagePtr)) {
       // Save each erosion step
-      char filename[20];
+      char filename[50];
       sprintf(filename, ".\\output_images\\OUTeroded%d.bmp", i);
       write_binary_bitmap(outputImagePtr, filename);
 
