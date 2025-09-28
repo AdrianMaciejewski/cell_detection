@@ -160,6 +160,28 @@ void write_binary_bitmap(unsigned char input_image_array[BMP_WIDTH][BMP_HEIGTH],
   bwrite(out_bmp, output_file_path);
 }
 
+void DEBUG_write_bitmap(unsigned char input_image_array[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], char * output_file_path)
+{
+    if (!g_debug) {
+        return;
+    }
+    write_bitmap(input_image_array, output_file_path);
+}
+void DEBUG_write_grayScale_bitmap(unsigned char input_image_array[BMP_WIDTH][BMP_HEIGTH], char * output_file_path)
+{
+    if (!g_debug) {
+        return;
+    }
+    write_grayScale_bitmap(input_image_array, output_file_path);
+}
+void DEBUG_write_binary_bitmap(unsigned char input_image_array[BMP_WIDTH][BMP_HEIGTH], char * output_file_path)
+{
+    if (!g_debug) {
+        return;
+    }
+    write_binary_bitmap(input_image_array, output_file_path);
+}
+
 // Private (ex-public) function declarations
 BMP* bopen(char* file_path)
 {
@@ -270,7 +292,7 @@ void set_pixel_rgb(BMP* bmp, int x, int y, unsigned char r, unsigned char g, uns
 
 void bwrite(BMP* bmp, char* file_name)
 {
-    printf("Writing to %s\n", file_name);
+    DEBUG_PRINT("Writing to %s\n", file_name);
     _map(bmp, _update_file_byte_contents);
 
     FILE* fp = fopen(file_name, "wb");

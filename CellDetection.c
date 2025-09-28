@@ -11,13 +11,15 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
 
   int i=0;
   while (!erode(inputImagePtr, outputImagePtr)) {
-      // Save each erosion step
-      char filename[50];
-      // sprintf(filename, ".\\output_images\\OUTeroded%d.bmp", i);
-      // write_binary_bitmap(outputImagePtr, filename);
-
+      if (g_debug)
+      {
+        char filename[50];
+        sprintf(filename, ".\\output_images\\OUTeroded%d.bmp", i);
+        DEBUG_write_binary_bitmap(outputImagePtr, filename);
+      }
+      
       capture(outputImagePtr, &result);
-      // printf("After erosion step %d, captured %d chords\n", i, result.n);
+      DEBUG_PRINT("After erosion step %d, captured %d chords\n", i, result.n);
       
       // Swap temp1 and temp2 pointers
       unsigned char (*tmp)[BMP_HEIGTH] = outputImagePtr;
@@ -27,25 +29,32 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
       // Increment step counter
       i++;
   }
-  // printf("Captured %d chords:\n", result.n);
+  DEBUG_PRINT("Captured %d chords:\n", result.n);
 
   return result;
 }
 
 void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
+  TESTS_memcpy(testData.original, input_image, BMP_WIDTH * BMP_HEIGTH * BMP_CHANNELS * sizeof(unsigned char));
   unsigned char processedImage[BMP_WIDTH][BMP_HEIGTH];
 
   // Step 1: Grayscale
   toGrayScale(input_image, processedImage);
-  // write_grayScale_bitmap(processedImage, ".\\output_images\\OUTgrayscale.bmp");
+  TESTS_memcpy(testData.grayscale, processedImage, sizeof(processedImage));
+  DEBUG_write_grayScale_bitmap(processedImage, ".\\output_images\\OUTgrayscale.bmp");
 
   // Step 2: Binary Threshold
   toBinaryScale(processedImage);
-  // write_binary_bitmap(processedImage, ".\\output_images\\OutBinary.bmp");
+  TESTS_memcpy(testData.binary, processedImage, sizeof(processedImage));
+  DEBUG_write_binary_bitmap(processedImage, ".\\output_images\\OutBinary.bmp");
 
   // Step 3 & 4: Erode and Capture
   struct CaptureResult result = erodeAndCaptureAll(processedImage);
+  TESTS_memcpy(testData.chords, result.chords, sizeof(result.chords));
+  TESTS_memcpy(&(testData.nChords), &(result.n), sizeof(result.n));
 
   // Step 5: Marking Cells with X
   drawAllX(input_image, result.chords, result.n);
+  TESTS_memcpy(testData.marked, input_image, BMP_WIDTH * BMP_HEIGTH * BMP_CHANNELS * sizeof(unsigned char));
+  TESTS_save_test_data(".\\TestData.c", &testData);
 }
