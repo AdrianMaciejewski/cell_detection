@@ -6,6 +6,7 @@
 #include "Step3Erode.h"
 #include "Step4Capture.h"
 #include "Step5MarkingCells.h"
+#include "CellDetection.h"
 
 
 //Declaring the array to store the image (unsigned char = unsigned 8 bit)
@@ -20,6 +21,8 @@ int main(int argc, char** argv)
       fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
       exit(1);
   }
+
+  detectCells(input_image);  
 
   //Load image from file
   read_bitmap(argv[1], input_image);

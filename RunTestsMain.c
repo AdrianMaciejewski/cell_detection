@@ -117,18 +117,6 @@ static int test_grayscale_expected(void){
     return 1;
 }
 
-static void benchToGrayScale(void){
-    static unsigned char input[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-    static unsigned char out  [BMP_WIDTH][BMP_HEIGTH];
-    memcpy(input, original, sizeof(original));
-
-    toGrayScale(input, out);
-}
-static int test_grayscale_time(void){
-    double t = measure_execution_time(benchToGrayScale);
-    printf("toGrayScale execution time: %.6f seconds\n", t);
-}
-
 /* ---- Step 2: toBinaryScale ---- */
 
 static int test_binary_properties(void){
@@ -171,13 +159,6 @@ static int test_binary_expected(void){
     return 1;
 }
 
-static void benchToBinaryScale(void) {
-    static unsigned char img[BMP_WIDTH][BMP_HEIGTH];
-    memcpy(img, grayscale, sizeof(img));
-
-    toBinaryScale(img);
-}
-
 /* ---- Step 3+4: erodeAndCaptureAll ---- */
 
 static int test_erode_capture_properties(void){
@@ -215,13 +196,6 @@ static int test_erode_capture_expected(void){
     return 1;
 }
 
-static void benchErodeAndCapture(void) {
-    static unsigned char img[BMP_WIDTH][BMP_HEIGTH];
-    memcpy(img, binary, sizeof(img));
-
-    (void)erodeAndCaptureAll(img);
-}
-
 /* ---- Step 5: drawAllX ---- */
 
 static int test_draw_marks_properties(void){
@@ -249,11 +223,71 @@ static int test_draw_marks_expected(void){
     return 1;
 }
 
+/* ---- Benchmarks ---- */
+static void benchToGrayScale(void){
+    static unsigned char input[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+    static unsigned char out  [BMP_WIDTH][BMP_HEIGTH];
+    memcpy(input, original, sizeof(original));
+
+    toGrayScale(input, out);
+}
+static void benchToBinaryScale(void) {
+    static unsigned char img[BMP_WIDTH][BMP_HEIGTH];
+    memcpy(img, grayscale, sizeof(img));
+
+    toBinaryScale(img);
+}
+
+void benchErodeAndCapture()
+{
+    printf("\t\t3&4.erodeAndCaptureUntillDone steps:\n");
+    static unsigned char inputImage[BMP_WIDTH][BMP_HEIGTH];
+    memcpy(inputImage, binary, sizeof(binary));
+
+    unsigned char (*inputImagePtr)[BMP_HEIGTH] = inputImage;
+
+    unsigned char outputImage[BMP_WIDTH][BMP_HEIGTH];
+    unsigned char (*outputImagePtr)[BMP_HEIGTH] = outputImage;
+
+    double totalTime=0.0;
+    struct CaptureResult result = { .n = 0 };
+    char isFullyEroded = 0;
+    int i=0;
+    while (!isFullyEroded) {
+        clock_t start1 = clock();
+        isFullyEroded = erode(inputImagePtr, outputImagePtr);
+        clock_t end1 = clock();
+        double erosionTime = (double)(end1 - start1) / CLOCKS_PER_SEC;
+        
+        clock_t start2 = clock();
+        capture(outputImagePtr, &result);
+        clock_t end2 = clock();
+        double captureTime = (double)(end2 - start2) / CLOCKS_PER_SEC;
+        
+        printf("\t\t\t%d. Erosion: %.6fs, Capture %.6fs\n", i+1, erosionTime, captureTime);
+        
+        // Swap temp1 and temp2 pointers
+        unsigned char (*tmp)[BMP_HEIGTH] = outputImagePtr;
+        outputImagePtr = inputImagePtr;
+        inputImagePtr = tmp;
+
+        totalTime += erosionTime + captureTime;
+        i++;
+    }
+
+    printf("\t\t\tTotal: %.6f s\n", totalTime);
+}
 static void benchDrawAllX(void) {
     static unsigned char img[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
     memcpy(img, original, sizeof(img));
 
     drawAllX(img, chords, nChords);
+}
+static void benchWholeProgram(void) {
+    static unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+    memcpy(input_image, original, sizeof(input_image));
+
+    detectCells(input_image);
 }
 
 /* --------------------- simple runner --------------------- */
@@ -270,7 +304,6 @@ int main(void){
 
     RUN(test_grayscale_properties);
     RUN(test_grayscale_expected);
-    RUN(test_grayscale_time);
 
     RUN(test_binary_properties);
     RUN(test_binary_expected);
@@ -282,11 +315,13 @@ int main(void){
     RUN(test_draw_marks_expected);
 
     // Benchmark summary
-    printf("\nTime per step:\n");
-    printf("\t1.toGrayScale:       %.6f s\n", measure_execution_time(benchToGrayScale));
-    printf("\t2.toBinaryScale:     %.6f s\n", measure_execution_time(benchToBinaryScale));
-    printf("\t3&4.erodeAndCapture:   %.6f s\n", measure_execution_time(benchErodeAndCapture));
-    printf("\t5.drawAllX:          %.6f s\n", measure_execution_time(benchDrawAllX));
+    printf("\nTime Benchmarks:\n");
+    printf("\tPer step:\n");
+    printf("\t\t1.toGrayScale:       %.6f s\n", measure_execution_time(benchToGrayScale));
+    printf("\t\t2.toBinaryScale:     %.6f s\n", measure_execution_time(benchToBinaryScale));
+    benchErodeAndCapture();
+    printf("\t\t5.drawAllX:          %.6f s\n", measure_execution_time(benchDrawAllX));
+    printf("\tWhole program:         %.6f s\n", measure_execution_time(benchWholeProgram));
 
 #undef RUN
 

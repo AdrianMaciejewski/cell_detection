@@ -37,11 +37,11 @@ void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
 
   // Step 1: Grayscale
   toGrayScale(input_image, processedImage);
-  write_grayScale_bitmap(processedImage, ".\\output_images\\OUTgrayscale.bmp");
+  // write_grayScale_bitmap(processedImage, ".\\output_images\\OUTgrayscale.bmp");
 
   // Step 2: Binary Threshold
   toBinaryScale(processedImage);
-  write_binary_bitmap(processedImage, ".\\output_images\\OutBinary.bmp");
+  // write_binary_bitmap(processedImage, ".\\output_images\\OutBinary.bmp");
 
   // Step 3 & 4: Erode and Capture
   struct CaptureResult result = erodeAndCaptureAll(processedImage);

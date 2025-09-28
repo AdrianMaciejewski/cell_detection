@@ -7,6 +7,7 @@
 #include "Step3Erode.h"
 #include "Step4Capture.h"
 #include "Step5MarkingCells.h"
+#include "CellDetection.h"
 
 struct ProcessingResults {
     unsigned char original[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
