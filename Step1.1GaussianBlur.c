@@ -35,7 +35,7 @@ static void convolveRowsGauss(const unsigned char src[BMP_WIDTH][BMP_HEIGTH], fl
     }
 }
 
-void convolveColsGauss(const float tmp[BMP_WIDTH][BMP_HEIGTH], unsigned char dst[BMP_WIDTH][BMP_HEIGTH],
+static void convolveColsGauss(const float tmp[BMP_WIDTH][BMP_HEIGTH], unsigned char dst[BMP_WIDTH][BMP_HEIGTH],
                                 const double *k, int r) {
     for (int x = 0; x < BMP_WIDTH; ++x) {
         for (int y = 0; y < BMP_HEIGTH; ++y) {
