@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 int otsu(unsigned char input_array[BMP_WIDTH][BMP_HEIGTH]){
-    char threshold;
     int hist[256] = {0};
     const int N = BMP_HEIGTH * BMP_WIDTH;
 
