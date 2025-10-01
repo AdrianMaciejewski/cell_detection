@@ -34,7 +34,7 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
   return result;
 }
 
-void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int sigma){
+void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], double sigma){
   TESTS_memcpy(testData.original, input_image, BMP_WIDTH * BMP_HEIGTH * BMP_CHANNELS * sizeof(unsigned char));
   unsigned char processedImage[BMP_WIDTH][BMP_HEIGTH];
 
