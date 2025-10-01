@@ -11,7 +11,7 @@
 #include "TestDataGeneration.h"
 #include "Step1.1GaussianBlur.h"
 
-void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int sigma);
+void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], double sigma);
 struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_HEIGTH]);
 
 #endif
