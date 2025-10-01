@@ -34,7 +34,7 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
   return result;
 }
 
-void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
+void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], double sigma){
   TESTS_memcpy(testData.original, input_image, BMP_WIDTH * BMP_HEIGTH * BMP_CHANNELS * sizeof(unsigned char));
   unsigned char processedImage[BMP_WIDTH][BMP_HEIGTH];
 
@@ -42,6 +42,10 @@ void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
   toGrayScale(input_image, processedImage);
   TESTS_memcpy(testData.grayscale, processedImage, sizeof(processedImage));
   DEBUG_write_grayScale_bitmap(processedImage, ".\\output_images\\OUTgrayscale.bmp");
+
+  // Step 1.1: Filter noice - Gaussian Background Subtraction
+  bgSubtractGaussian(processedImage, sigma);
+  DEBUG_write_grayScale_bitmap(processedImage, ".\\output_images\\OUTbgSubtracted.bmp");
 
   // Step 2: Binary Threshold
   toBinaryScale(processedImage);

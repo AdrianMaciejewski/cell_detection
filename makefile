@@ -7,7 +7,7 @@ TARGET = cell_detection
 
 # Source files
 # Blur.c
-SRCS = main.c cbmp.c \
+SRCS = main.c cbmp.c Blur.c\
        Step1GrayScale.c Step2BinaryThreshold.c Step3Erode.c \
        Step4Capture.c Step5MarkingCells.c
 
@@ -19,7 +19,7 @@ all: $(TARGET)
 
 # Link object files into final executable
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) -lm
 
 # Compile each .c into .o
 %.o: %.c
