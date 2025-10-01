@@ -1,8 +1,4 @@
-#include <stdint.h>
-#include <math.h>
-#include <string.h>
-
-#include "cbmp.h"
+#include "Step1.1GaussianBlur.h"
 
 // length = 2*r+1, where r ≈ 3*sigma
 static int gaussianKernel1d(double sigma, double *k, int max_len) {
@@ -39,8 +35,7 @@ static void convolveRowsGauss(const unsigned char src[BMP_WIDTH][BMP_HEIGTH], fl
     }
 }
 
-
-static void convolveColsGauss(const float tmp[BMP_WIDTH][BMP_HEIGTH], unsigned char dst[BMP_WIDTH][BMP_HEIGTH],
+void convolveColsGauss(const float tmp[BMP_WIDTH][BMP_HEIGTH], unsigned char dst[BMP_WIDTH][BMP_HEIGTH],
                                 const double *k, int r) {
     for (int x = 0; x < BMP_WIDTH; ++x) {
         for (int y = 0; y < BMP_HEIGTH; ++y) {
@@ -65,8 +60,8 @@ void bgSubtractGaussian(unsigned char input_array[BMP_WIDTH][BMP_HEIGTH], double
     double kernel[1025];
     int r = gaussianKernel1d(sigma, kernel, 1025);
 
-    float   tmp[BMP_WIDTH][BMP_HEIGTH];
-    unsigned char bg[BMP_WIDTH][BMP_HEIGTH];
+    static float tmp[BMP_WIDTH][BMP_HEIGTH];
+    static unsigned char bg[BMP_WIDTH][BMP_HEIGTH];
     convolveRowsGauss(input_array, tmp, kernel, r);
     convolveColsGauss(tmp, bg, kernel, r);
 
