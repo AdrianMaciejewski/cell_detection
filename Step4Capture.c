@@ -62,7 +62,7 @@ void capture(unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
                 result->n++;
             }
             
-            y = y+CAPTURE_SIZE; // skip ahead by capture size to avoid overlapping captures and wasteful checks
+            y += CAPTURE_SIZE; // skip ahead by capture size to avoid overlapping captures and wasteful checks
         }
     }
 }
