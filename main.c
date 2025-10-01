@@ -48,50 +48,48 @@ unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 //Main function
 int main(int argc, char** argv)
 {
-  if (argc < 3 || argc > 4)
-  {
-      fprintf(stderr, "Usage: %s <input file path> <output file path> [sigma]\n", argv[0]);
-      exit(1);
-  }
+    if (argc < 3 || argc > 4)
+    {
+        fprintf(stderr, "Usage: %s <input file path> <output file path> [sigma]\n", argv[0]);
+        exit(1);
+    }
 
-  double sigma = 1.0;
-  if (argc == 4) sigma = atof(argv[3]);
+    double sigma = 1.0;
+    if (argc == 4) sigma = atof(argv[3]);
 
-  //Load image from file
-  read_bitmap(argv[1], input_image);
+    // Load image from file
+    read_bitmap(argv[1], input_image);
 
-  unsigned char processedImage[BMP_WIDTH][BMP_HEIGTH];
+    // Use two buffers and pointers for processing
+    unsigned char buffer1[BMP_WIDTH][BMP_HEIGTH];
+    unsigned char buffer2[BMP_WIDTH][BMP_HEIGTH];
+    unsigned char (*current)[BMP_HEIGTH] = buffer1;
+    unsigned char (*next)[BMP_HEIGTH] = buffer2;
 
-  // Step 1: Grayscale
-  toGrayScale(input_image, processedImage);
-  write_grayScale_bitmap(processedImage, ".\\output_images\\OUTgrayscale.bmp");
-  
-  
-  // Step 1.5: Blur (background subtraction)
-  unsigned char blurred[BMP_WIDTH][BMP_HEIGTH];
-  bgSubtractGaussian(processedImage, blurred, sigma); // sigma=2.0
+    // Step 1: Grayscale
+    toGrayScale(input_image, current);
+    write_grayScale_bitmap(current, ".\\output_images\\OUTgrayscale.bmp");
 
-  // Copy blurred result back if needed
-  for (int x = 0; x < BMP_WIDTH; ++x)
-    for (int y = 0; y < BMP_HEIGTH; ++y)
-      processedImage[x][y] = blurred[x][y];
+    // Step 1.5: Blur (background subtraction)
+    bgSubtractGaussian(current, next, sigma);
+    unsigned char (*tmp)[BMP_HEIGTH] = current;
+    current = next;
+    next = tmp;
+    write_grayScale_bitmap(current, ".\\output_images\\OUTblurred.bmp");
 
-  write_grayScale_bitmap(processedImage, ".\\output_images\\OUTblurred.bmp");
+    // Step 2: Binary Threshold
+    toBinaryScale(current);
+    write_binary_bitmap(current, ".\\output_images\\OutBinary.bmp");
 
+    // Step 3 & 4: Erode and Capture
+    struct CaptureResult result = erodeAndCaptureAll(current);
 
-  // Step 2: Binary Threshold
-  toBinaryScale(processedImage);
-  write_binary_bitmap(processedImage, ".\\output_images\\OutBinary.bmp");
+    // Step 5: Marking Cells with X
+    drawAllX(input_image, result.chords, result.n);
 
-  // Step 3 & 4: Erode and Capture
-  struct CaptureResult result = erodeAndCaptureAll(processedImage);
+    // Step 6: Save the final image with marked cells
+    write_bitmap(input_image, argv[2]);
 
-  // Step 5: Marking Cells with X
-  drawAllX(input_image, result.chords, result.n);
-  
-  // Step 6: Save the final image with marked cells
-  write_bitmap(input_image, argv[2]);
-
-  printf("Done!\n");
-  return 0;
+    printf("Done!\n");
+    return 0;
 }
