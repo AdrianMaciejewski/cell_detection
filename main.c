@@ -39,7 +39,7 @@ int main(int argc, char** argv)
                 if (input_sigma > 0) {
                     sigma = input_sigma;
                 } else {
-                    fprintf(stderr, "Invalid sigma value. Using default sigma = 10.\n");
+                    fprintf(stderr, "Invalid sigma value. Using default sigma = 1.\n");
                 }
                 i++; // Skip the next argument as it's the sigma value
             }
