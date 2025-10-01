@@ -61,7 +61,7 @@ static void convolveColsGauss(const float tmp[BMP_WIDTH][BMP_HEIGTH], unsigned c
 
 //  Main function to perform Gaussian background subtraction
 
-void bgSubtractGaussian(unsigned char input_array[BMP_WIDTH][BMP_HEIGTH], unsigned char output_array[BMP_WIDTH][BMP_HEIGTH], double sigma) {
+void bgSubtractGaussian(unsigned char input_array[BMP_WIDTH][BMP_HEIGTH], double sigma) {
     double kernel[1025];
     int r = gaussianKernel1d(sigma, kernel, 1025);
 
@@ -75,7 +75,7 @@ void bgSubtractGaussian(unsigned char input_array[BMP_WIDTH][BMP_HEIGTH], unsign
             int v = (int)input_array[x][y] - (int)bg[x][y];
             if (v < 0)   v = 0;
             if (v > 255) v = 255;
-            output_array[x][y] = (unsigned char)v;
+            input_array[x][y] = (unsigned char)v;
         }
     }
 }

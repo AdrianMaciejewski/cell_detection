@@ -59,30 +59,22 @@ int main(int argc, char** argv)
 
     // Load image from file
     read_bitmap(argv[1], input_image);
-
-    // Use two buffers and pointers for processing
-    unsigned char buffer1[BMP_WIDTH][BMP_HEIGTH];
-    unsigned char buffer2[BMP_WIDTH][BMP_HEIGTH];
-    unsigned char (*current)[BMP_HEIGTH] = buffer1;
-    unsigned char (*next)[BMP_HEIGTH] = buffer2;
+    unsigned char processedImage[BMP_WIDTH][BMP_HEIGTH];
 
     // Step 1: Grayscale
-    toGrayScale(input_image, current);
-    write_grayScale_bitmap(current, ".\\output_images\\OUTgrayscale.bmp");
+    toGrayScale(input_image, processedImage);
+    write_grayScale_bitmap(processedImage, ".\\output_images\\OUTgrayscale.bmp");
 
-    // Step 1.5: Blur (background subtraction)
-    bgSubtractGaussian(current, next, sigma);
-    unsigned char (*tmp)[BMP_HEIGTH] = current;
-    current = next;
-    next = tmp;
-    write_grayScale_bitmap(current, ".\\output_images\\OUTblurred.bmp");
+    // Step 1.1: Blur (background subtraction)
+    bgSubtractGaussian(processedImage, sigma);
+    write_grayScale_bitmap(processedImage, ".\\output_images\\OUTblurred.bmp");
 
     // Step 2: Binary Threshold
-    toBinaryScale(current);
-    write_binary_bitmap(current, ".\\output_images\\OutBinary.bmp");
+    toBinaryScale(processedImage);
+    write_binary_bitmap(processedImage, ".\\output_images\\OutBinary.bmp");
 
     // Step 3 & 4: Erode and Capture
-    struct CaptureResult result = erodeAndCaptureAll(current);
+    struct CaptureResult result = erodeAndCaptureAll(processedImage);
 
     // Step 5: Marking Cells with X
     drawAllX(input_image, result.chords, result.n);
