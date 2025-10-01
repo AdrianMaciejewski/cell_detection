@@ -290,6 +290,18 @@ static void benchWholeProgram(void) {
     detectCells(input_image);
 }
 
+/* Performance test for cell detection */
+struct CaptureResult result;
+static int test_performance_cell_detection(void) {
+    static unsigned char inB[BMP_WIDTH][BMP_HEIGTH];
+    memcpy(inB, binary, sizeof(inB));
+
+    result = erodeAndCaptureAll(inB);
+
+    ASSERT_TRUE(result.n >= nChords, "Detected fewer cells than expected");
+    return 1;
+}
+
 /* --------------------- simple runner --------------------- */
 static int run_test(int (*fn)(void), const char* name){
     int ok = fn();
@@ -322,6 +334,11 @@ int main(void){
     benchErodeAndCapture();
     printf("\t\t5.drawAllX:          %.6f s\n", measure_execution_time(benchDrawAllX));
     printf("\tWhole program:         %.6f s\n", measure_execution_time(benchWholeProgram));
+
+    // Performance test
+    printf("\nPerformance test:\n");
+    RUN(test_performance_cell_detection);
+    printf("Detected number of cells: %d\n", result.n);
 
 #undef RUN
 
