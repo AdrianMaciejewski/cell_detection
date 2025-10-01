@@ -3,6 +3,7 @@
 #include "cbmp.h"
 #include "Step1GrayScale.h"
 #include "Step2BinaryThreshold.h"
+#include "Step2-5Fill.h"
 #include "Step3Erode.h"
 #include "Step4Capture.h"
 #include "Step5MarkingCells.h"
@@ -20,7 +21,7 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
   int i=0;
   while (!erode(inputImagePtr, outputImagePtr)) {
       // Save each erosion step
-      char filename[20];
+      char filename[50];
       sprintf(filename, ".\\output_images\\OUTeroded%d.bmp", i);
       write_binary_bitmap(outputImagePtr, filename);
 
@@ -65,6 +66,9 @@ int main(int argc, char** argv)
   // Step 2: Binary Threshold
   toBinaryScale(processedImage);
   write_binary_bitmap(processedImage, ".\\output_images\\OutBinary.bmp");
+
+  // Step2.5: Fill holes in cells
+  fill(processedImage);
 
   // Step 3 & 4: Erode and Capture
   struct CaptureResult result = erodeAndCaptureAll(processedImage);
