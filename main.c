@@ -6,6 +6,7 @@
 #include "Step3Erode.h"
 #include "Step4Capture.h"
 #include "Step5MarkingCells.h"
+#include "Blur.h"
 
 
 struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_HEIGTH])
@@ -47,11 +48,14 @@ unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 //Main function
 int main(int argc, char** argv)
 {
-  if (argc != 3)
+  if (argc < 3 || argc > 4)
   {
-      fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
+      fprintf(stderr, "Usage: %s <input file path> <output file path> [sigma]\n", argv[0]);
       exit(1);
   }
+
+  double sigma = 1.0;
+  if (argc == 4) sigma = atof(argv[3]);
 
   //Load image from file
   read_bitmap(argv[1], input_image);
@@ -61,6 +65,19 @@ int main(int argc, char** argv)
   // Step 1: Grayscale
   toGrayScale(input_image, processedImage);
   write_grayScale_bitmap(processedImage, ".\\output_images\\OUTgrayscale.bmp");
+  
+  
+  // Step 1.5: Blur (background subtraction)
+  unsigned char blurred[BMP_WIDTH][BMP_HEIGTH];
+  bgSubtractGaussian(processedImage, blurred, sigma); // sigma=2.0
+
+  // Copy blurred result back if needed
+  for (int x = 0; x < BMP_WIDTH; ++x)
+    for (int y = 0; y < BMP_HEIGTH; ++y)
+      processedImage[x][y] = blurred[x][y];
+
+  write_grayScale_bitmap(processedImage, ".\\output_images\\OUTblurred.bmp");
+
 
   // Step 2: Binary Threshold
   toBinaryScale(processedImage);
