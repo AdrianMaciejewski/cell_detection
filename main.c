@@ -38,6 +38,6 @@ int main(int argc, char** argv)
   detectCells(input_image);  
   write_bitmap(input_image, argv[2]);
 
-  printf("Done!\n");
-  return 0;
+    printf("Done!\n");
+    return 0;
 }
