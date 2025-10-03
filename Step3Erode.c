@@ -2,16 +2,19 @@
 #include <stdio.h>
 
 // --- shape ---
+#define erosionShapeSize 3
+#define erosionShapeDiameter (erosionShapeSize/2) // 1 for size 3, 2 for size 5, etc.
+
 // Define the erosion shape
-const char erosionShape[erosionShapeSize][erosionShapeSize] = {
+static const char erosionShape[erosionShapeSize][erosionShapeSize] = {
   {0,1,0},
   {1,1,1},
   {0,1,0}
 };
 
-char areErosionShapeOffsetsInitialized = 0;
-int erosionShapeOffsets[erosionShapeSize*erosionShapeSize][2]; // for efficiency, use indexes of 1s in erosionShape
-int erosionShapeOffsetsCount = 0;
+static char areErosionShapeOffsetsInitialized = 0;
+static int erosionShapeOffsets[erosionShapeSize*erosionShapeSize][2]; // for efficiency, use indexes of 1s in erosionShape
+static int erosionShapeOffsetsCount = 0;
 
 // convenience function to get the offsets of the erosion shape
 int getErosionShapeIndexOffsets() {
