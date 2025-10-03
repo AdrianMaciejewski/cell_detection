@@ -40,7 +40,7 @@ char isOutOfBounds(int x, int y) {
 }
 
 char shouldBeEroded(int x, int y, unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH]) {
-    for (int i=0; i<=erosionShapeOffsetsCount; i++) {
+    for (int i=0; i<erosionShapeOffsetsCount; i++) {
         int* offset = erosionShapeOffsets[i];
         int neighborX = x + offset[0];
         int neighborY = y + offset[1];
