@@ -10,40 +10,40 @@
 Time Benchmarks:
 	Per step:
 		1.toGrayScale:       0.005000 s
-		2.toBinaryScale:     0.002000 s
+		2.toBinaryScale:     0.003000 s
 		3&4.erodeAndCaptureUntillDone steps:
-			1. Erosion: 0.004000s, Capture 0.033000s
-			2. Erosion: 0.004000s, Capture 0.033000s
+			1. Erosion: 0.004000s, Capture 0.034000s
+			2. Erosion: 0.003000s, Capture 0.034000s
 			3. Erosion: 0.003000s, Capture 0.034000s
 			4. Erosion: 0.003000s, Capture 0.035000s
 			5. Erosion: 0.002000s, Capture 0.034000s
-			6. Erosion: 0.002000s, Capture 0.034000s
-			7. Erosion: 0.002000s, Capture 0.034000s
-			8. Erosion: 0.003000s, Capture 0.034000s
-			9. Erosion: 0.002000s, Capture 0.034000s
+			6. Erosion: 0.002000s, Capture 0.033000s
+			7. Erosion: 0.003000s, Capture 0.034000s
+			8. Erosion: 0.002000s, Capture 0.034000s
+			9. Erosion: 0.003000s, Capture 0.034000s
 			10. Erosion: 0.002000s, Capture 0.034000s
-			Total: 0.366000 s
-		5.drawAllX:          0.001000 s
-	Whole program:         0.238000 s
+			Total: 0.367000 s
+		5.drawAllX:          0.000000 s
+	Whole program:         0.236000 s
 
 Performance test:
 		Detected 300 cells for '1EASY.bmp'
-		Detected 300 cells for '5EASY.bmp'
-		Detected 301 cells for '10EASY.bmp'
-		Detected on average: 300 cells
+		Detected 301 cells for '5EASY.bmp'
+		Detected 304 cells for '10EASY.bmp'
+		Detected on average: 301 cells
 
-		Detected 271 cells for '1MEDIUM.bmp'
-		Detected 263 cells for '5MEDIUM.bmp'
-		Detected 271 cells for '10MEDIUM.bmp'
-		Detected on average: 268 cells
+		Detected 272 cells for '1MEDIUM.bmp'
+		Detected 256 cells for '5MEDIUM.bmp'
+		Detected 269 cells for '10MEDIUM.bmp'
+		Detected on average: 265 cells
 
-		Detected 262 cells for '1HARD.bmp'
-		Detected 265 cells for '5HARD.bmp'
-		Detected 253 cells for '10HARD.bmp'
-		Detected on average: 260 cells
+		Detected 265 cells for '1HARD.bmp'
+		Detected 262 cells for '5HARD.bmp'
+		Detected 257 cells for '10HARD.bmp'
+		Detected on average: 261 cells
 
 		Detected 229 cells for '1IMPOSSIBLE.bmp'
-		Detected 223 cells for '3IMPOSSIBLE.bmp'
+		Detected 222 cells for '3IMPOSSIBLE.bmp'
 		Detected 237 cells for '5IMPOSSIBLE.bmp'
 		Detected on average: 229 cells
 
