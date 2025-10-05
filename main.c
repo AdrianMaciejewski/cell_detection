@@ -50,7 +50,7 @@ int main(int argc, char** argv)
                 if (input_threshold >= 0 && input_threshold <= 255) {
                     threshold = input_threshold;
                 } else {
-                    fprintf(stderr, "Invalid threshold value. Using default threshold = 10.\n");
+                    fprintf(stderr, "Invalid threshold value. Using default threshold = 15.\n");
                 }
                 i++; // Skip the next argument as it's the threshold value
             }
