@@ -184,7 +184,7 @@ static int test_erode_capture_properties(void){
 
     struct CaptureResult res = erodeAndCaptureAll(inB);
 
-    ASSERT_TRUE(res.n >= 0 && res.n <= 10000, "Chord count out of range");
+    ASSERT_TRUE(res.n >= 0 && res.n <= 1000, "Chord count out of range");
     ASSERT_TRUE(chords_in_bounds(res.chords, res.n), "Some chords out of bounds");
     return 1;
 }
