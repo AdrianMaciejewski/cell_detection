@@ -61,6 +61,12 @@ void capture(unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH], struct CaptureRes
                 result->chords[result->n][1] = y;
                 result->n++;
             }
+            
+            if (x+CAPTURE_SIZE<BMP_WIDTH-HALF_TOTAL_CAPTURE_SIZE)
+            {
+                x += CAPTURE_SIZE; // Skip ahead since we've cleared this area - no need to check overlapping positions
+                x -= 1; // adjust for the upcoming y++ in the for loop
+            }
         }
     }
 }
