@@ -17,8 +17,8 @@ unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 //Main function
 int main(int argc, char** argv)
 {
-    double sigma = 7;
-    int threshold = 15;
+    double sigma = SIGMA;
+    int threshold = THRESHOLD;
     if (argc <3 || argc > 9)
     {
         fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
                 if (input_sigma > 0) {
                     sigma = input_sigma;
                 } else {
-                    fprintf(stderr, "Invalid sigma value. Using default sigma = 1.\n");
+                    fprintf(stderr, "Invalid sigma value. Using default sigma = %f.\n", sigma);
                 }
                 i++; // Skip the next argument as it's the sigma value
             }
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
                 if (input_threshold >= 0 && input_threshold <= 255) {
                     threshold = input_threshold;
                 } else {
-                    fprintf(stderr, "Invalid threshold value. Using default threshold = 15.\n");
+                    fprintf(stderr, "Invalid threshold value. Using default threshold = %d.\n", threshold);
                 }
                 i++; // Skip the next argument as it's the threshold value
             }
