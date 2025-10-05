@@ -1,18 +1,7 @@
 [PASS] test_grayscale_properties
 [PASS] test_grayscale_expected
 [PASS] test_binary_properties
-  diff at (0,0): 255 vs 0
-  diff at (0,1): 255 vs 0
-  diff at (0,2): 255 vs 0
-  diff at (0,3): 255 vs 0
-  diff at (0,4): 255 vs 0
-  diff at (0,5): 255 vs 0
-  diff at (0,6): 255 vs 0
-  diff at (0,7): 255 vs 0
-  diff at (0,8): 255 vs 0
-  diff at (0,9): 255 vs 0
-Expected diffs == 0, got 802940 vs 0. Binary does not match expectedBinary
-[FAIL] test_binary_expected
+[PASS] test_binary_expected
 [PASS] test_erode_capture_properties
 [PASS] test_erode_capture_expected
 [PASS] test_draw_marks_properties
@@ -23,17 +12,18 @@ Time Benchmarks:
 		1.toGrayScale:       0.005000 s
 		2.toBinaryScale:     0.002000 s
 		3&4.erodeAndCaptureUntillDone steps:
-			1. Erosion: 0.004000s, Capture 0.035000s
-			2. Erosion: 0.003000s, Capture 0.035000s
-			3. Erosion: 0.004000s, Capture 0.036000s
-			4. Erosion: 0.003000s, Capture 0.037000s
-			5. Erosion: 0.002000s, Capture 0.036000s
+			1. Erosion: 0.004000s, Capture 0.034000s
+			2. Erosion: 0.004000s, Capture 0.036000s
+			3. Erosion: 0.003000s, Capture 0.034000s
+			4. Erosion: 0.003000s, Capture 0.035000s
+			5. Erosion: 0.003000s, Capture 0.033000s
 			6. Erosion: 0.003000s, Capture 0.034000s
-			7. Erosion: 0.002000s, Capture 0.035000s
-			8. Erosion: 0.003000s, Capture 0.037000s
-			9. Erosion: 0.002000s, Capture 0.035000s
-			10. Erosion: 0.003000s, Capture 0.040000s
-			Total: 0.389000 s
+			7. Erosion: 0.002000s, Capture 0.034000s
+			8. Erosion: 0.003000s, Capture 0.034000s
+			9. Erosion: 0.002000s, Capture 0.034000s
+			10. Erosion: 0.003000s, Capture 0.034000s
+			11. Erosion: 0.003000s, Capture 0.035000s
+			Total: 0.410000 s
 		5.drawAllX:          0.001000 s
 	Whole program:         0.585000 s
 
@@ -61,4 +51,4 @@ Performance test:
 		Average cells no. Detected: 270 cells
 
 
-Summary: 7/8 tests passed
+Summary: 8/8 tests passed
