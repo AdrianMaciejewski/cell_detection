@@ -1,4 +1,4 @@
-#include "Step2-5Fill.h"
+#include "Step1.2Fill.h"
 #include <stdio.h>
 
 char encased(int x, int y, unsigned char binaryImage[BMP_WIDTH][BMP_HEIGTH]) {

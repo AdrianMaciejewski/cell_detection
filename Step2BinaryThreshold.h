@@ -5,6 +5,6 @@
 
 #define THRESHOLD 10
 
-void toBinaryScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH]);
+void toBinaryScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], int threshold);
 
 #endif

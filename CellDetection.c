@@ -18,8 +18,12 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
         DEBUG_write_binary_bitmap(outputImagePtr, filename);
       }
       
-      capture(outputImagePtr, &result);
-      DEBUG_PRINT("After erosion step %d, captured %d chords\n", i, result.n);
+      if (i>2)
+      {
+        // get rid off all the grain from gaussian noise and binary thresholding before capturing
+        capture(outputImagePtr, &result);
+        DEBUG_PRINT("After erosion step %d, captured %d chords\n", i, result.n);
+      }
       
       // Swap temp1 and temp2 pointers
       unsigned char (*tmp)[BMP_HEIGTH] = outputImagePtr;
@@ -34,7 +38,7 @@ struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_
   return result;
 }
 
-void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], double sigma){
+void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], double sigma, int threshold){
   TESTS_memcpy(testData.original, input_image, BMP_WIDTH * BMP_HEIGTH * BMP_CHANNELS * sizeof(unsigned char));
   unsigned char processedImage[BMP_WIDTH][BMP_HEIGTH];
 
@@ -47,8 +51,12 @@ void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
   bgSubtractGaussian(processedImage, sigma);
   DEBUG_write_grayScale_bitmap(processedImage, ".\\output_images\\OUTbgSubtracted.bmp");
 
+  // Step 1.2: Fill
+  fill(processedImage);
+  DEBUG_write_grayScale_bitmap(processedImage, ".\\output_images\\OUTfilled.bmp");
+
   // Step 2: Binary Threshold
-  toBinaryScale(processedImage);
+  toBinaryScale(processedImage, threshold);
   TESTS_memcpy(testData.binary, processedImage, sizeof(processedImage));
   DEBUG_write_binary_bitmap(processedImage, ".\\output_images\\OutBinary.bmp");
 
