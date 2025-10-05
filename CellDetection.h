@@ -12,7 +12,7 @@
 #include "Step1.1GaussianBlur.h"
 #include "Step1.2Fill.h"
 
-void detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], double sigma, int threshold);
+int detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], double sigma, int threshold);
 struct CaptureResult erodeAndCaptureAll(unsigned char inputImage[BMP_WIDTH][BMP_HEIGTH]);
 
 #endif
