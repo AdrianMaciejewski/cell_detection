@@ -48,8 +48,8 @@ int detectCells(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], 
   DEBUG_write_grayScale_bitmap(processedImage, ".\\output_images\\OUTgrayscale.bmp");
 
   // Step 1.1: Filter noice - Gaussian Background Subtraction
-  bgSubtractGaussian(processedImage, sigma);
-  DEBUG_write_grayScale_bitmap(processedImage, ".\\output_images\\OUTbgSubtracted.bmp");
+  // bgSubtractGaussian(processedImage, sigma);
+  // DEBUG_write_grayScale_bitmap(processedImage, ".\\output_images\\OUTbgSubtracted.bmp");
 
   // Step 1.2: Fill
   // fill(processedImage);
