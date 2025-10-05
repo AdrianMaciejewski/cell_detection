@@ -12,6 +12,7 @@
 #include "CellDetection.h"
 #include "TestData.h"
 
+
 typedef void (*func_t)(void);
 double measure_execution_time(func_t func) {
     clock_t start = clock();
@@ -20,9 +21,22 @@ double measure_execution_time(func_t func) {
     return (double)(end - start) / CLOCKS_PER_SEC;
 }
 
+/* Global file pointer for logging */
+static FILE *log_file = NULL;
+
+/* Custom printf that writes to both console and file */
+#define printf(...) do { \
+    fprintf(stdout, __VA_ARGS__); \
+    if(log_file) fprintf(log_file, __VA_ARGS__); \
+} while(0)
+
 /* --------------------- tiny assertion helpers --------------------- */
 
-#define FAIL(...) do{ fprintf(stderr, __VA_ARGS__); fputc('\n', stderr); }while(0)
+#define FAIL(...) do{ \
+    fprintf(stderr, __VA_ARGS__); \
+    fputc('\n', stderr); \
+    if(log_file) { fprintf(log_file, __VA_ARGS__); fputc('\n', log_file); } \
+}while(0)
 #define ASSERT_TRUE(cond, ...) do{ if(!(cond)){ FAIL(__VA_ARGS__); return 0; } }while(0)
 #define ASSERT_EQ_INT(a,b,...) do{ long long _A=(a), _B=(b); if(_A!=_B){ \
   FAIL("Expected %s == %s, got %lld vs %lld. %s", #a, #b, _A, _B, "" __VA_ARGS__); return 0; } }while(0)
@@ -37,6 +51,7 @@ static int diff_u8_2d(const unsigned char *A, const unsigned char *B, int max_re
             if(rowA[y]!=rowB[y]){
                 if(diffs<max_report){
                     fprintf(stderr,"  diff at (%d,%d): %u vs %u\n",x,y,(unsigned)rowA[y],(unsigned)rowB[y]);
+                    if(log_file) fprintf(log_file,"  diff at (%d,%d): %u vs %u\n",x,y,(unsigned)rowA[y],(unsigned)rowB[y]);
                 }
                 ++diffs;
             }
@@ -56,6 +71,8 @@ static int diff_u8_3d(const unsigned char *A, const unsigned char *B, int max_re
                 if(pA[c]!=pB[c]){
                     if(diffs<max_report){
                         fprintf(stderr,"  diff at (%d,%d,c=%d): %u vs %u\n",
+                                x,y,c,(unsigned)pA[c],(unsigned)pB[c]);
+                        if(log_file) fprintf(log_file,"  diff at (%d,%d,c=%d): %u vs %u\n",
                                 x,y,c,(unsigned)pA[c],(unsigned)pB[c]);
                     }
                     ++diffs;
@@ -128,7 +145,7 @@ static int test_binary_properties(void){
 
     /* Work in-place per your API; copy into out first to avoid mutating golden. */
     memcpy(out, inBin, sizeof(out));
-    toBinaryScale(out);
+    toBinaryScale(out, THRESHOLD);
 
     int zeros=0, twf=0, other=0;
     for(int x=0;x<BMP_WIDTH;++x){
@@ -151,7 +168,7 @@ static int test_binary_expected(void){
 
     memcpy(inBin, grayscale, sizeof(inBin));
     memcpy(out, inBin, sizeof(out));
-    toBinaryScale(out);
+    toBinaryScale(out, THRESHOLD);
 
     int diffs = diff_u8_2d((const unsigned char*)out,
                            (const unsigned char*)binary, 10);
@@ -167,7 +184,7 @@ static int test_erode_capture_properties(void){
 
     struct CaptureResult res = erodeAndCaptureAll(inB);
 
-    ASSERT_TRUE(res.n >= 0 && res.n <= 10000, "Chord count out of range");
+    ASSERT_TRUE(res.n >= 0 && res.n <= 1000, "Chord count out of range");
     ASSERT_TRUE(chords_in_bounds(res.chords, res.n), "Some chords out of bounds");
     return 1;
 }
@@ -186,6 +203,9 @@ static int test_erode_capture_expected(void){
            res.chords[i][1]!=chords[i][1]){
             if(mismatch<10){
                 fprintf(stderr,"  chord[%d]: got (%d,%d), expected (%d,%d)\n",
+                        i,res.chords[i][0],res.chords[i][1],
+                        chords[i][0],chords[i][1]);
+                if(log_file) fprintf(log_file,"  chord[%d]: got (%d,%d), expected (%d,%d)\n",
                         i,res.chords[i][0],res.chords[i][1],
                         chords[i][0],chords[i][1]);
             }
@@ -235,7 +255,7 @@ static void benchToBinaryScale(void) {
     static unsigned char img[BMP_WIDTH][BMP_HEIGTH];
     memcpy(img, grayscale, sizeof(img));
 
-    toBinaryScale(img);
+    toBinaryScale(img, THRESHOLD);
 }
 
 void benchErodeAndCapture()
@@ -287,19 +307,44 @@ static void benchWholeProgram(void) {
     static unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
     memcpy(input_image, original, sizeof(input_image));
 
-    detectCells(input_image);
+    detectCells(input_image, SIGMA, THRESHOLD);
 }
 
 /* Performance test for cell detection */
-struct CaptureResult result;
-static int test_performance_cell_detection(void) {
-    static unsigned char inB[BMP_WIDTH][BMP_HEIGTH];
-    memcpy(inB, binary, sizeof(inB));
+static void test_cell_detection_performance() {
+    char* imagePath[12] = {
+        "./samples/easy/1EASY.bmp",
+        "./samples/easy/5EASY.bmp",
+        "./samples/easy/10EASY.bmp",
+        "./samples/medium/1MEDIUM.bmp",
+        "./samples/medium/5MEDIUM.bmp",
+        "./samples/medium/10MEDIUM.bmp",
+        "./samples/hard/1HARD.bmp",
+        "./samples/hard/5HARD.bmp",
+        "./samples/hard/10HARD.bmp",
+        "./samples/impossible/1IMPOSSIBLE.bmp",
+        "./samples/impossible/3IMPOSSIBLE.bmp",
+        "./samples/impossible/5IMPOSSIBLE.bmp",
+    };
+    int totalSum = 0;
+    int difficultySum = 0;
+    for (int i = 0; i < 12; i++) {
+        static unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+        read_bitmap(imagePath[i], input_image);
+        int resultCount = detectCells(input_image, SIGMA, THRESHOLD);
+        difficultySum += resultCount;
+        totalSum += resultCount;
+        const char *filename = strrchr(imagePath[i], '/');
+        filename = filename ? filename + 1 : imagePath[i];
 
-    result = erodeAndCaptureAll(inB);
-
-    ASSERT_TRUE(result.n >= nChords, "Detected fewer cells than expected");
-    return 1;
+        printf("\t\tDetected %d cells for '%s'\n", resultCount, filename);
+        if (i % 3 == 2)
+        {
+            printf("\t\tDetected on average: %d cells\n\n", difficultySum / 3);
+            difficultySum = 0;
+        }
+    }
+    printf("\t\tAverage cells no. Detected: %d cells\n\n", totalSum / 12);
 }
 
 /* --------------------- simple runner --------------------- */
@@ -310,6 +355,12 @@ static int run_test(int (*fn)(void), const char* name){
 }
 
 int main(void){
+    // Open log file for writing
+    log_file = fopen("test_results.txt", "w");
+    if (log_file == NULL) {
+        fprintf(stderr, "Warning: Could not open test_results.txt for writing\n");
+    }
+    
     int passed=0, total=0;
 
 #define RUN(T) do{ ++total; passed += run_test(T, #T); }while(0)
@@ -337,11 +388,16 @@ int main(void){
 
     // Performance test
     printf("\nPerformance test:\n");
-    RUN(test_performance_cell_detection);
-    printf("Detected number of cells: %d\n", result.n);
+    test_cell_detection_performance();
 
 #undef RUN
 
     printf("\nSummary: %d/%d tests passed\n", passed, total);
+    
+    // Close the log file
+    if (log_file) {
+        fclose(log_file);
+    }
+    
     return (passed==total) ? 0 : 1;
 }

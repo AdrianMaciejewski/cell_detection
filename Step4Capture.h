@@ -10,7 +10,7 @@
 #define HALF_TOTAL_CAPTURE_SIZE (HALF_CAPTURE_SIZE + FRAME_CLEARANCE)
 
 struct CaptureResult {
-    int chords[10000][2];
+    int chords[1000][2];
     int n;
 };
 

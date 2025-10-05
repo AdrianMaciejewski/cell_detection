@@ -20,7 +20,7 @@ struct ProcessingResults {
     unsigned char grayscale[BMP_WIDTH][BMP_HEIGTH];
     unsigned char binary[BMP_WIDTH][BMP_HEIGTH];
     unsigned char marked[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-    int chords[10000][2];
+    int chords[1000][2];
     int nChords;
 };
 
