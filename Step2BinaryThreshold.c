@@ -47,8 +47,8 @@ int otsu(unsigned char input_array[BMP_WIDTH][BMP_HEIGTH]){
     return bestT;
 }
 
-void toBinaryScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH]) {
-    int threshold = otsu(input_image);
+void toBinaryScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH], int threshold) {
+    // threshold = otsu(input_image);
     for (int x=0; x < BMP_WIDTH; x++) {
         for (int y=0; y < BMP_HEIGTH; y++) {
             input_image[x][y] = input_image[x][y] < threshold ? 0 : 255;

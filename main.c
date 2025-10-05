@@ -17,14 +17,16 @@ unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 //Main function
 int main(int argc, char** argv)
 {
-    double sigma = 1;
-    if (argc <3 || argc > 7)
+    double sigma = 7;
+    int threshold = 15;
+    if (argc <3 || argc > 9)
     {
         fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
         printf("Optional flags:\n");
         printf(" --debug : Enable debug output e.g. printing and saving intermediary result images\n");
         printf(" --generate_test_data : Generate test data file TestData.c\n");
         printf(" --sigma <value> : Set the sigma value for Gaussian background subtraction\n");
+        printf(" --threshold <value> : Set the threshold value for binary thresholding (0-255)\n");
         exit(1);
     }
     for (int i = 1; i < argc; i++) {
@@ -43,10 +45,19 @@ int main(int argc, char** argv)
                 }
                 i++; // Skip the next argument as it's the sigma value
             }
+            if (strcmp(argv[i], "--threshold") == 0 && i + 1 < argc) {
+                int input_threshold = atoi(argv[i + 1]);
+                if (input_threshold >= 0 && input_threshold <= 255) {
+                    threshold = input_threshold;
+                } else {
+                    fprintf(stderr, "Invalid threshold value. Using default threshold = 15.\n");
+                }
+                i++; // Skip the next argument as it's the threshold value
+            }
     }
 
     read_bitmap(argv[1], input_image);
-    detectCells(input_image, sigma);
+    detectCells(input_image, sigma, threshold);
     write_bitmap(input_image, argv[2]);
 
     printf("Done!\n");
