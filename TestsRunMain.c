@@ -21,9 +21,22 @@ double measure_execution_time(func_t func) {
     return (double)(end - start) / CLOCKS_PER_SEC;
 }
 
+/* Global file pointer for logging */
+static FILE *log_file = NULL;
+
+/* Custom printf that writes to both console and file */
+#define printf(...) do { \
+    fprintf(stdout, __VA_ARGS__); \
+    if(log_file) fprintf(log_file, __VA_ARGS__); \
+} while(0)
+
 /* --------------------- tiny assertion helpers --------------------- */
 
-#define FAIL(...) do{ fprintf(stderr, __VA_ARGS__); fputc('\n', stderr); }while(0)
+#define FAIL(...) do{ \
+    fprintf(stderr, __VA_ARGS__); \
+    fputc('\n', stderr); \
+    if(log_file) { fprintf(log_file, __VA_ARGS__); fputc('\n', log_file); } \
+}while(0)
 #define ASSERT_TRUE(cond, ...) do{ if(!(cond)){ FAIL(__VA_ARGS__); return 0; } }while(0)
 #define ASSERT_EQ_INT(a,b,...) do{ long long _A=(a), _B=(b); if(_A!=_B){ \
   FAIL("Expected %s == %s, got %lld vs %lld. %s", #a, #b, _A, _B, "" __VA_ARGS__); return 0; } }while(0)
@@ -38,6 +51,7 @@ static int diff_u8_2d(const unsigned char *A, const unsigned char *B, int max_re
             if(rowA[y]!=rowB[y]){
                 if(diffs<max_report){
                     fprintf(stderr,"  diff at (%d,%d): %u vs %u\n",x,y,(unsigned)rowA[y],(unsigned)rowB[y]);
+                    if(log_file) fprintf(log_file,"  diff at (%d,%d): %u vs %u\n",x,y,(unsigned)rowA[y],(unsigned)rowB[y]);
                 }
                 ++diffs;
             }
@@ -57,6 +71,8 @@ static int diff_u8_3d(const unsigned char *A, const unsigned char *B, int max_re
                 if(pA[c]!=pB[c]){
                     if(diffs<max_report){
                         fprintf(stderr,"  diff at (%d,%d,c=%d): %u vs %u\n",
+                                x,y,c,(unsigned)pA[c],(unsigned)pB[c]);
+                        if(log_file) fprintf(log_file,"  diff at (%d,%d,c=%d): %u vs %u\n",
                                 x,y,c,(unsigned)pA[c],(unsigned)pB[c]);
                     }
                     ++diffs;
@@ -187,6 +203,9 @@ static int test_erode_capture_expected(void){
            res.chords[i][1]!=chords[i][1]){
             if(mismatch<10){
                 fprintf(stderr,"  chord[%d]: got (%d,%d), expected (%d,%d)\n",
+                        i,res.chords[i][0],res.chords[i][1],
+                        chords[i][0],chords[i][1]);
+                if(log_file) fprintf(log_file,"  chord[%d]: got (%d,%d), expected (%d,%d)\n",
                         i,res.chords[i][0],res.chords[i][1],
                         chords[i][0],chords[i][1]);
             }
@@ -336,6 +355,12 @@ static int run_test(int (*fn)(void), const char* name){
 }
 
 int main(void){
+    // Open log file for writing
+    log_file = fopen("test_results.txt", "w");
+    if (log_file == NULL) {
+        fprintf(stderr, "Warning: Could not open test_results.txt for writing\n");
+    }
+    
     int passed=0, total=0;
 
 #define RUN(T) do{ ++total; passed += run_test(T, #T); }while(0)
@@ -368,5 +393,11 @@ int main(void){
 #undef RUN
 
     printf("\nSummary: %d/%d tests passed\n", passed, total);
+    
+    // Close the log file
+    if (log_file) {
+        fclose(log_file);
+    }
+    
     return (passed==total) ? 0 : 1;
 }
