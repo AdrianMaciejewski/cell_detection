@@ -189,6 +189,44 @@ static int test_erode_capture_properties(void){
     return 1;
 }
 
+
+
+/* ---- Step 3: erode cycles measurement ---- */
+// Function to read the Time Stamp Counter
+static inline uint64_t rdtsc(void) {
+    unsigned int lo, hi;
+    __asm__ volatile ("rdtsc" : "=a" (lo), "=d" (hi));
+    return ((uint64_t)hi << 32) | lo;
+}
+
+static void test_erode_cycles(void){
+    unsigned char outputImage[BMP_WIDTH][BMP_HEIGTH];
+    static unsigned char inB[BMP_WIDTH][BMP_HEIGTH];
+    memcpy(inB, binary, sizeof(inB));
+
+    uint64_t start, end;
+
+    // warmup cache
+    start = rdtsc();
+    erode(inB, outputImage);
+    end = rdtsc();
+    
+    
+    // Multiple measurements for better accuracy
+    printf("\nMultiple measurements:\n");
+    uint64_t total_cycles = 0;
+    int runs = 1000;
+    for (int i = 0; i < runs; i++) {
+        start = rdtsc();
+        erode(inB, outputImage);
+        end = rdtsc();
+        uint64_t cycles = end - start;
+        total_cycles += cycles;
+        printf("Run %d: %llu cycles\n", i + 1, (unsigned long long)cycles);
+    }
+    printf("Average: %llu cycles\n", (unsigned long long)(total_cycles / runs));
+}
+
 static int test_erode_capture_expected(void){
     static unsigned char inB[BMP_WIDTH][BMP_HEIGTH];
     memcpy(inB, binary, sizeof(inB));
@@ -364,6 +402,7 @@ int main(void){
     int passed=0, total=0;
 
 #define RUN(T) do{ ++total; passed += run_test(T, #T); }while(0)
+    test_erode_cycles();
 
     RUN(test_grayscale_properties);
     RUN(test_grayscale_expected);
